@@ -55,7 +55,7 @@ migrate-action:
 	docker compose run --rm todoapp-postgres-migrate \
 		-path /migrations \
 		-database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@todoapp-postgres:5432/${POSTGRES_DB}?sslmode=disable \
-		"$(action)"
+		$(action)
 
 migrate-up:
 	@make migrate-action action=up
@@ -64,3 +64,8 @@ migrate-down:
 	@make migrate-action action=down
 
 
+
+todoapp-run:
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
+	go mod tidy && \
+	go run cmd/todoapp/main.go

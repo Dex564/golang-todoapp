@@ -38,7 +38,7 @@ func main() {
 	)
 
 	if err != nil {
-		logger.Fatal("failed to init postgres connection pool")
+		logger.Fatal("failed to init postgres connection pool", zap.Error(err))
 	}
 	defer pool.Close()
 

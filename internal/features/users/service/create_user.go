@@ -21,7 +21,4 @@ func (s *UsersService) CreateUser(
 	}
 
 	return user, nil
-	// 2. repo.Save(user)
-
-	// 3. return user
 }

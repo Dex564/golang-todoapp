@@ -8,8 +8,8 @@ export HOST_GID := $(shell id -g)
 
 
 env-up:
-	@if [ ! -d out/pgdata ]; then \
-		mkdir out/pgdata; \
+	@if [ ! -d ${PROJECT_ROOT}/out/pgdata ]; then \
+		mkdir ${PROJECT_ROOT}/out/pgdata; \
 	fi
 	docker compose up -d todoapp-postgres
 
@@ -21,7 +21,7 @@ env-cleanup:
 	if [ "$$ans" = "y" ]; then \
 		docker compose down todoapp-postgres && \
 		docker compose down port-forwarder && \
-		rm -rf out/pgdata/ && \
+		rm -rf ${PROJECT_ROOT}/out/pgdata/ && \
 		echo "Файлы окружения очищены"; \
 	else \
 		echo "Очистка окружения отменена"; \
@@ -70,4 +70,4 @@ todoapp-run:
 	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
 	export POSTGRES_HOST=localhost && \
 	go mod tidy && \
-	go run cmd/todoapp/main.go
+	go run ${PROJECT_ROOT}/cmd/todoapp/main.go

@@ -8,8 +8,8 @@ export HOST_GID := $(shell id -g)
 
 
 env-up:
-	@if [ ! -d out/pgdata ]; then \
-		mkdir out/pgdata; \
+	@if [ ! -d ${PROJECT_ROOT}/out/pgdata ]; then \
+		mkdir ${PROJECT_ROOT}/out/pgdata; \
 	fi
 	docker compose up -d todoapp-postgres
 
@@ -20,7 +20,8 @@ env-cleanup:
 	@read -p "Очистить все volume файлы окружения? Опасность утери данных. [y/n]: " ans; \
 	if [ "$$ans" = "y" ]; then \
 		docker compose down todoapp-postgres && \
-		rm -rf out/pgdata/ && \
+		docker compose down port-forwarder && \
+		rm -rf ${PROJECT_ROOT}/out/pgdata/ && \
 		echo "Файлы окружения очищены"; \
 	else \
 		echo "Очистка окружения отменена"; \
@@ -55,7 +56,7 @@ migrate-action:
 	docker compose run --rm todoapp-postgres-migrate \
 		-path /migrations \
 		-database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@todoapp-postgres:5432/${POSTGRES_DB}?sslmode=disable \
-		"$(action)"
+		$(action)
 
 migrate-up:
 	@make migrate-action action=up
@@ -64,3 +65,9 @@ migrate-down:
 	@make migrate-action action=down
 
 
+
+todoapp-run:
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
+	export POSTGRES_HOST=localhost && \
+	go mod tidy && \
+	go run ${PROJECT_ROOT}/cmd/todoapp/main.go

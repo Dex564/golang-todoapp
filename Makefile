@@ -71,3 +71,12 @@ todoapp-run:
 	export POSTGRES_HOST=localhost && \
 	go mod tidy && \
 	go run ${PROJECT_ROOT}/cmd/todoapp/main.go
+
+app-run:
+	@make env-up && \
+	make env-port-forward && \
+	make todoapp-run
+
+app-stop:
+	@make env-down && \
+	make env-port-close

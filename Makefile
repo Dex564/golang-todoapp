@@ -64,7 +64,14 @@ migrate-up:
 migrate-down:
 	@make migrate-action action=down
 
-
+logs-cleanup:
+	@read -p "Очистить все файлы логов? Опасность утери данных. [y/n]: " ans; \
+	if [ "$$ans" = "y" ]; then \
+		rm -rf ${PROJECT_ROOT}/out/logs && \
+		echo "Файлы логов очищены"; \
+	else \
+		echo "Очистка логов отменена"; \
+	fi
 
 todoapp-run:
 	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \

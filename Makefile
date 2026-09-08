@@ -87,3 +87,9 @@ app-run:
 app-stop:
 	@make env-down && \
 	make env-port-close
+
+todoapp-deploy:
+	@docker compose up -d --build todoapp
+
+todoapp-stop:
+	@docker compose down todoapp

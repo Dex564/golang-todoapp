@@ -24,7 +24,7 @@ func (r *UsersRepository) PatchUser(
 		username=$1,
 		phone_number=$2,
 		version=version+1
-	WHERE id=$3 AND version=%4
+	WHERE id=$3 AND version=$4
 	RETURNING
 		id,
 		version,

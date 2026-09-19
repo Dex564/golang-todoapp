@@ -13,8 +13,8 @@ import (
 )
 
 type PatchUserRequest struct {
-	Username    core_http_types.Nullable[string] `json:"username"`
-	PhoneNumber core_http_types.Nullable[string] `json:"phone_number"`
+	Username    core_http_types.Nullable[string] `json:"username" swaggertype:"string" example:"Максим Максимович"`
+	PhoneNumber core_http_types.Nullable[string] `json:"phone_number" swaggertype:"string" example:"+71112223344"`
 }
 
 func (r *PatchUserRequest) Validate() error {
@@ -47,6 +47,25 @@ func (r *PatchUserRequest) Validate() error {
 
 type PatchUserResponse UserDTOResponse
 
+// PatchUser    godoc
+// @Summary     Изменение пользователя
+// @Description Изменение информации об уже существующем пользователе
+// @Description ### Логика обновления полей (Three-state logic):
+// @Description 1. **Поле не передано**: поле игнорируется, значение в БД не меняется
+// @Description 2. **Явно передано значение**: `"phone_number": "+71112223344"` - устанавливается новое поле
+// @Description 3. **Передан null**: `"phone_number: null"` - очищает поле в БД (set to NULL)
+// @Description Ограничения: `username` не может быть выставлено как null
+// @Tags        users
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "ID изменяемого пользователя"
+// @Param       request body PatchUserRequest true "PatchUser тело запроса"
+// @Success     200 {object} PatchUserResponse "Успешно изменённый пользователь"
+// @Failure     400 {object} core_http_response.ErrorResponse "Bad Request"
+// @Failure     404 {object} core_http_response.ErrorResponse "User not found"
+// @Failure     409 {object} core_http_response.ErrorResponse "Conflict"
+// @Failure     500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router      /users/{id} [patch]
 func (h *UsersHTTPHandler) PatchUser(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
@@ -59,7 +78,7 @@ func (h *UsersHTTPHandler) PatchUser(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	var request PatchUserRequest
-	if err := core_http_request.DecodeAndValidateRequest(r, request); err != nil {
+	if err := core_http_request.DecodeAndValidateRequest(r, &request); err != nil {
 		responseHandler.ErrorResponse(err, "failed to decode and validate HTTP request")
 		return
 	}

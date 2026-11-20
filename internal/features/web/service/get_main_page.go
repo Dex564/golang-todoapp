@@ -9,7 +9,7 @@ import (
 func (s *WebService) GetMainPage() ([]byte, error) {
 	htmlFilePath := path.Join(
 		os.Getenv("PROJECT_ROOT"),
-		"/public/index.html",
+		"/public/admin/index.html",
 	)
 
 	html, err := s.webRepository.GetFile(htmlFilePath)

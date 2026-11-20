@@ -10,8 +10,10 @@ import (
 )
 
 type CreateUserRequest struct {
-	Username    string  `json:"username" validate:"required,min=3,max=100"                   example:"Ivan Ivanov"`
-	PhoneNumber *string `json:"phone_number" validate:"omitempty,min=10,max=15,startswith=+" example:"+79998886655"`
+	Username string `json:"username" validate:"required,min=3,max=100"`
+	Login    string `json:"login" validate:"required,min=3,max=100"`
+	Email    string `json:"email" validate:"required,min=8,max=100"`
+	Password string `json:"password" validate:"required,min=5"`
 }
 
 type CreateUserResponse UserDTOResponse
@@ -53,5 +55,5 @@ func (h *UsersHTTPHandler) CreateUser(rw http.ResponseWriter, r *http.Request) {
 }
 
 func domainFromDTO(dto CreateUserRequest) domain.User {
-	return domain.NewUserUninitialized(dto.Username, dto.PhoneNumber)
+	return domain.NewUserUninitialized(dto.Username, dto.Login, dto.Email, dto.Password)
 }

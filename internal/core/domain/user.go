@@ -11,21 +11,26 @@ type User struct {
 	ID      int
 	Version int
 
-	Username    string
-	PhoneNumber *string
+	Username string
+	Login    string
+	Email    string
+
+	PasswordHash string
 }
 
-func NewUser(id int, version int, username string, phoneNumber *string) User {
+func NewUser(id int, version int, username string, login string, email string, passwordHash string) User {
 	return User{
-		ID:          id,
-		Version:     version,
-		Username:    username,
-		PhoneNumber: phoneNumber,
+		ID:           id,
+		Version:      version,
+		Username:     username,
+		Login:        login,
+		Email:        email,
+		PasswordHash: passwordHash,
 	}
 }
 
-func NewUserUninitialized(username string, phoneNumber *string) User {
-	return NewUser(UninitializedID, UninitializedVersion, username, phoneNumber)
+func NewUserUninitialized(username string, login string, email string, passwordHash string) User {
+	return NewUser(UninitializedID, UninitializedVersion, username, login, email, passwordHash)
 }
 
 func (u *User) Validate() error {
@@ -34,32 +39,38 @@ func (u *User) Validate() error {
 		return fmt.Errorf("invalid `Username` length: %d: %w", usernameLength, core_errors.ErrInvalidArgument)
 	}
 
-	if u.PhoneNumber != nil {
-		phoneNumberLength := len([]rune(*u.PhoneNumber))
-		if phoneNumberLength < 10 || phoneNumberLength > 15 {
-			return fmt.Errorf("invalid `PhoneNumber` length: %d: %w", phoneNumberLength, core_errors.ErrInvalidArgument)
-		}
-		re := regexp.MustCompile(`^\+[0-9]+$`)
-		if !re.MatchString(*u.PhoneNumber) {
-			return fmt.Errorf("invalid `PhoneNumber` format: %w", core_errors.ErrInvalidArgument)
-		}
+	loginLength := len([]rune(u.Login))
+	if loginLength < 3 || loginLength > 30 {
+		return fmt.Errorf("invalid `Login` length: %d: %w", loginLength, core_errors.ErrInvalidArgument)
+	}
+
+	emailLength := len([]rune(u.Email))
+	if emailLength < 8 || emailLength > 254 {
+		return fmt.Errorf("invalid `Email` length: %d: %w", emailLength, core_errors.ErrInvalidArgument)
+	}
+	re := regexp.MustCompile(`[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$`)
+	if !re.MatchString(u.Email) {
+		return fmt.Errorf("invalid `Email` format: %w", core_errors.ErrInvalidArgument)
 	}
 
 	return nil
 }
 
 type UserPatch struct {
-	Username    Nullable[string]
-	PhoneNumber Nullable[string]
+	Username Nullable[string]
+	Login    Nullable[string]
+	Email    Nullable[string]
 }
 
 func NewUserPatch(
 	username Nullable[string],
-	phoneNumber Nullable[string],
+	login Nullable[string],
+	email Nullable[string],
 ) UserPatch {
 	return UserPatch{
-		Username:    username,
-		PhoneNumber: phoneNumber,
+		Username: username,
+		Login:    login,
+		Email:    email,
 	}
 }
 
@@ -68,6 +79,13 @@ func (p *UserPatch) Validate() error {
 		return fmt.Errorf("`Username` can't be patched to NULL: %w", core_errors.ErrInvalidArgument)
 	}
 
+	if p.Login.Set && p.Login.Value == nil {
+		return fmt.Errorf("`Login` can't be patched to NULL: %w", core_errors.ErrInvalidArgument)
+	}
+
+	if p.Email.Set && p.Email.Value == nil {
+		return fmt.Errorf("`Email` can't be patched to NULL: %w", core_errors.ErrInvalidArgument)
+	}
 	return nil
 }
 
@@ -80,10 +98,6 @@ func (u *User) ApplyPatch(patch UserPatch) error {
 
 	if patch.Username.Set {
 		tmp.Username = *patch.Username.Value
-	}
-
-	if patch.PhoneNumber.Set {
-		tmp.PhoneNumber = patch.PhoneNumber.Value
 	}
 
 	if err := tmp.Validate(); err != nil {

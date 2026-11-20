@@ -4,11 +4,13 @@ CREATE TABLE todoapp.users (
     id            SERIAL                 PRIMARY KEY,
     version       BIGINT       NOT NULL  DEFAULT 1,
     username      VARCHAR(100) NOT NULL  CHECK (char_length(username) BETWEEN 3 and 100),
-    phone_number  VARCHAR(15)            CHECK (
-        phone_number ~ '^\+[0-9]+$' 
+    login         VARCHAR(30)  NOT NULL  UNIQUE CHECK (char_length(login) BETWEEN 3 AND 30),
+    email         VARCHAR(254) NOT NULL  UNIQUE CHECK (
+        email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
         AND
-        char_length(phone_number) BETWEEN 10 and 15
-    )
+        char_length(email) BETWEEN 8 AND 254
+    ),
+    password_hash TEXT NOT NULL
 ); 
 
 CREATE TABLE todoapp.tasks (
@@ -26,5 +28,5 @@ CREATE TABLE todoapp.tasks (
         (completed=TRUE AND completed_at IS NOT NULL AND completed_at >= created_at)
     ),
 
-    author_user_id  INTEGER       NOT NULL REFERENCES todoapp.users(id)
+    user_id  INTEGER       NOT NULL REFERENCES todoapp.users(id) ON DELETE CASCADE
 )

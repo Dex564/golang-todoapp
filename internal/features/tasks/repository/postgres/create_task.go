@@ -30,7 +30,7 @@ func (r TasksRepository) CreateTask(
 		task.Completed,
 		task.CreatedAt,
 		task.CompletedAt,
-		task.AuthodUserID,
+		task.UserID,
 	)
 	var taskModel TaskModel
 

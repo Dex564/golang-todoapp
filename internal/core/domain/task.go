@@ -17,7 +17,7 @@ type Task struct {
 	CreatedAt   time.Time
 	CompletedAt *time.Time
 
-	AuthodUserID int
+	UserID int
 }
 
 func NewTask(
@@ -28,24 +28,24 @@ func NewTask(
 	completed bool,
 	createdAt time.Time,
 	completedAt *time.Time,
-	authorUserID int,
+	UserID int,
 ) Task {
 	return Task{
-		ID:           id,
-		Version:      version,
-		Title:        title,
-		Description:  description,
-		Completed:    completed,
-		CreatedAt:    createdAt,
-		CompletedAt:  completedAt,
-		AuthodUserID: authorUserID,
+		ID:          id,
+		Version:     version,
+		Title:       title,
+		Description: description,
+		Completed:   completed,
+		CreatedAt:   createdAt,
+		CompletedAt: completedAt,
+		UserID:      UserID,
 	}
 }
 
 func NewTaskUninitialized(
 	title string,
 	description *string,
-	authorUserID int,
+	userID int,
 ) Task {
 	return NewTask(
 		UninitializedID,
@@ -55,7 +55,7 @@ func NewTaskUninitialized(
 		false,
 		time.Now(),
 		nil,
-		authorUserID,
+		userID,
 	)
 }
 

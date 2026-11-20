@@ -26,7 +26,7 @@ func taskDTOFromDomain(task domain.Task) TaskDTOResponse {
 		Completed:    task.Completed,
 		CreatedAt:    task.CreatedAt,
 		CompletedAt:  task.CompletedAt,
-		AuthorUserID: task.AuthodUserID,
+		AuthorUserID: task.UserID,
 	}
 }
 

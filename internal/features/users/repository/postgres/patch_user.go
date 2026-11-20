@@ -36,7 +36,7 @@ func (r *UsersRepository) PatchUser(
 		ctx,
 		query,
 		user.Username,
-		user.PhoneNumber,
+		user.Email,
 		id,
 		user.Version,
 	)
